@@ -1,24 +1,10 @@
-function [L,QA,QB] = genchi2_parms_td(A,V,nx,warn_nonnull,tol)
+function [L,QA,QB] = genchi2_parms_bl(A,V,nx,frange,fres,warn_nonnull,tol)
 
-% Input
-%
-%     A             VAR coefficients array
-%     V             residuals covariance matrix (positive-definite)
-%     nx            dimension of target variable
-%     warn_nonnull  warn if A not in null space
-%     tol           numerical tolerance for imaginary and/or unstable eignevalues
-
-% Output
-%
-%     L             eignevalues for generalised chi^2 distribution (sorted ascending)
-%     QA            the generalised chi^2 'A' matrix
-%     QB            the generalised chi^2 'B' matrix
-
-if nargin < 4 || isempty(warn_nonnull)
+if nargin < 6 || isempty(warn_nonnull)
 	warn_nonnull = true;
 end
 
-if nargin < 5 || isempty(tol)
+if nargin < 7 || isempty(tol)
 	tol = sqrt(eps);
 end
 
@@ -51,26 +37,19 @@ QB = I(yy,yy); % under H0
 
 % Hessian assuming H0
 
-QA = Finfo(A(y,y,:),parcov(V,y,x));
+QA = Finfo_bl(A(y,y,:),parcov(V,y,x),frange,fres);
 
-% Cholesky factors
+% Cholesky factor (note: QA may only be positive-semidefinite!)
 
-[LA,pa] = chol(QA,'lower');
 [RB,pb] = chol(QB);
 
-% Check positive-definite, calculate BA matrix
+% check positive-definite, calculate BA matrix (or equivalent)
 
-if pa>0 || pb > 0
-	if pa>0
-		warning('Generalised chi^2 ''A'' matrix not positive-definite');
-	end
-	if pb>0
-		warning('Generalised chi^2 ''B'' matrix not positive-definite');
-	end
+if pb > 0
+	warning('Generalised chi^2 ''B'' matrix not positive-definite');
 	QBA = QB*QA;
 else
-	QBAFAC = RB*LA;
-	QBA = QBAFAC*QBAFAC'; % ensures QBA positive-definite
+	QBA = RB*QA*RB'; % ensures QBA positive-semidefinite
 end
 
 % Calculate (and if necessary adjust) eigenvalues
@@ -84,10 +63,6 @@ if any(L < -tol)
 	 warning('Negative eigenvalues detected: min = %.6f (setting to 0)\n',-max(-L));
 end
 L(L<eps) = 0;
-if any(L > 1+tol)
-	warning('Eigenvalues outside unit disk detected: max = %.6f (setting to 1)\n',max(L));
-end
-L(L>1-eps) = 1;
 L = sort(L);
 
 % NOTE: Use the eigenvalues (rather than trace) to calculate mean and variance,
