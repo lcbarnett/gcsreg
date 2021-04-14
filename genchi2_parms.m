@@ -7,12 +7,20 @@ function [L,QA,QB] = genchi2_parms(A,V,nx,warn_nonnull,tol)
 %     nx            dimension of target variable
 %     warn_nonnull  warn if A not in null space
 %     tol           numerical tolerance for imaginary and/or unstable eignevalues
-
+%
 % Output
 %
 %     L             eignevalues for generalised chi^2 distribution (sorted ascending)
 %     QA            the generalised chi^2 'A' matrix
 %     QB            the generalised chi^2 'B' matrix
+%
+% Description
+%
+% Calculates parameters for the asymptotic generalised chi^2 sampling distribution
+% of the time-domain (broadband) single-regression Granger causality estimator. See:
+%
+%     A. J. Gutknecht and L. Barnett, Sampling distribution for single-regression
+%     Granger causality estimators, arXiv, 2019: https://arxiv.org/abs/1911.09625
 
 if nargin < 4 || isempty(warn_nonnull)
 	warn_nonnull = true;
