@@ -1,4 +1,4 @@
-function [L,QA,QB] = genchi2_parms_td(A,V,nx,warn_nonnull,tol)
+function [L,QA,QB] = genchi2_parms(A,V,nx,warn_nonnull,tol)
 
 % Input
 %
