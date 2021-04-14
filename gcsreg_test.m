@@ -24,7 +24,7 @@ A = specnorm(A,rho);
 X = randn(n,n+k);
 V = X*X';
 
-Ltd = genchi2_parms_td(A,V,nx);
+Ltd = genchi2_parms(A,V,nx);
 Lbl = genchi2_parms_bl(A,V,nx,frange,fres);
 
 d = p*ny;
