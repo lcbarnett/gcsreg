@@ -49,7 +49,7 @@ if ~all(H0(:))
 	if warn_nonnull
 		warning('VAR parameters not in null space! Projecting onto null space');
 	end
-	A(x,y,:);
+	A(x,y,:) = 0;
 end
 
 % Inverse Fisher information
